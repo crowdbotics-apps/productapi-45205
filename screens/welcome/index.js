@@ -1,64 +1,50 @@
-import React from "react"
-import {
-  View,
-  Image,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  StyleSheet
-} from "react-native"
+import React, { useEffect, useState } from "react";
+import { SafeAreaView, View, Text, Image, FlatList, StyleSheet } from "react-native";
 
-const WelcomeScreen = () => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.group} />
-        <View style={styles.group}>
-          <Image style={styles.logo} source={require("./logo.png")} />
-          <Text style={styles.text}>
-            Let's build something amazing together!
-          </Text>
-        </View>
-        <Text style={styles.footer}>Made with ❤️ by Crowdbotics</Text>
-      </ScrollView>
-    </SafeAreaView>
-  )
-}
+const ProductListingScreen = () => {
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    fetch("https://dummyjson.com/products/1").then(response => response.json()).then(data => setProducts(data)).catch(error => console.error(error));
+  }, []);
+
+  const renderItem = ({
+    item
+  }) => <View style={styles.itemContainer}>
+      <Image style={styles.image} source={{
+      uri: item.image
+    }} />
+      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.price}>{item.price}</Text>
+    </View>;
+
+  return <SafeAreaView style={styles.container}>
+      <FlatList data={products} renderItem={renderItem} keyExtractor={item => item.id.toString()} />
+    </SafeAreaView>;
+};
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#F8F8FC",
-    height: "100%"
-  },
-  scrollView: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 20
+    backgroundColor: "#fff"
   },
-  group: {
-    alignItems: "center"
+  itemContainer: {
+    flexDirection: "row",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc"
   },
-  logo: {
-    height: 180,
-    width: 180,
-    padding: 40,
-    borderRadius: 30,
-    margin: 40
+  image: {
+    width: 50,
+    height: 50,
+    marginRight: 10
   },
-  text: {
-    textAlign: "center",
-    fontSize: 28,
-    color: "#828AB0",
-    fontWeight: 700
+  title: {
+    fontSize: 16,
+    fontWeight: "bold"
   },
-  footer: {
-    textAlign: "center",
-    fontSize: 18,
-    color: "#828AB0",
-    fontWeight: 700,
-    marginBottom: 20
+  price: {
+    fontSize: 14,
+    color: "#888"
   }
-})
-
-export default WelcomeScreen
+});
+export default ProductListingScreen;
