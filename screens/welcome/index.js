@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { SafeAreaView, View, Text, FlatList, Image, StyleSheet } from "react-native";
+import { SafeAreaView, View, Text, FlatList, Image, StyleSheet, TouchableOpacity, TextInput, Button } from "react-native";
 
-const ListScreen = () => {
+const ListScreen = ({
+  navigation
+}) => {
   const [data, setData] = useState([{
     id: 1,
     title: "iPhone 9",
@@ -14,59 +16,14 @@ const ListScreen = () => {
     category: "smartphones",
     thumbnail: "https://i.dummyjson.com/data/products/1/thumbnail.jpg",
     images: ["https://i.dummyjson.com/data/products/1/1.jpg", "https://i.dummyjson.com/data/products/1/2.jpg", "https://i.dummyjson.com/data/products/1/3.jpg", "https://i.dummyjson.com/data/products/1/4.jpg", "https://i.dummyjson.com/data/products/1/thumbnail.jpg"]
-  }, {
-    id: 1,
-    title: "iPhone 9",
-    description: "An apple mobile which is nothing like apple",
-    price: 549,
-    discountPercentage: 12.96,
-    rating: 4.69,
-    stock: 94,
-    brand: "Apple",
-    category: "smartphones",
-    thumbnail: "https://i.dummyjson.com/data/products/3/thumbnail.jpg",
-    images: ["https://i.dummyjson.com/data/products/1/1.jpg", "https://i.dummyjson.com/data/products/1/2.jpg", "https://i.dummyjson.com/data/products/1/3.jpg", "https://i.dummyjson.com/data/products/1/4.jpg", "https://i.dummyjson.com/data/products/1/thumbnail.jpg"]
-  }, {
-    id: 1,
-    title: "iPhone 9",
-    description: "An apple mobile which is nothing like apple",
-    price: 549,
-    discountPercentage: 12.96,
-    rating: 4.69,
-    stock: 94,
-    brand: "Apple",
-    category: "smartphones",
-    thumbnail: "https://i.dummyjson.com/data/products/2/thumbnail.jpg",
-    images: ["https://i.dummyjson.com/data/products/1/1.jpg", "https://i.dummyjson.com/data/products/1/2.jpg", "https://i.dummyjson.com/data/products/1/3.jpg", "https://i.dummyjson.com/data/products/1/4.jpg", "https://i.dummyjson.com/data/products/1/thumbnail.jpg"]
-  }, {
-    id: 1,
-    title: "iPhone 9",
-    description: "An apple mobile which is nothing like apple",
-    price: 549,
-    discountPercentage: 12.96,
-    rating: 4.69,
-    stock: 94,
-    brand: "Apple",
-    category: "smartphones",
-    thumbnail: "https://i.dummyjson.com/data/products/5/thumbnail.jpg",
-    images: ["https://i.dummyjson.com/data/products/1/1.jpg", "https://i.dummyjson.com/data/products/1/2.jpg", "https://i.dummyjson.com/data/products/1/3.jpg", "https://i.dummyjson.com/data/products/1/4.jpg", "https://i.dummyjson.com/data/products/1/thumbnail.jpg"]
-  }, {
-    id: 1,
-    title: "iPhone 9",
-    description: "An apple mobile which is nothing like apple",
-    price: 549,
-    discountPercentage: 12.96,
-    rating: 4.69,
-    stock: 94,
-    brand: "Apple",
-    category: "smartphones",
-    thumbnail: "https://i.dummyjson.com/data/products/7/thumbnail.jpg",
-    images: ["https://i.dummyjson.com/data/products/1/1.jpg", "https://i.dummyjson.com/data/products/1/2.jpg", "https://i.dummyjson.com/data/products/1/3.jpg", "https://i.dummyjson.com/data/products/1/4.jpg", "https://i.dummyjson.com/data/products/1/thumbnail.jpg"]
   }]);
+  const [search, setSearch] = useState("");
 
   const renderItem = ({
     item
-  }) => <View style={styles.itemContainer}>
+  }) => <TouchableOpacity style={styles.itemContainer} onPress={() => navigation.navigate("Details", {
+    item
+  })}>
       <Image source={{
       uri: item.thumbnail
     }} style={styles.imageStyle} />
@@ -75,10 +32,16 @@ const ListScreen = () => {
         <Text style={styles.descriptionStyle}>{item.description}</Text>
         <Text style={styles.priceStyle}>${item.price}</Text>
       </View>
-    </View>;
+    </TouchableOpacity>;
 
+  const filterData = data.filter(item => item.title.toLowerCase().includes(search.toLowerCase()));
+  const sortedData = filterData.sort((a, b) => b.price - a.price);
   return <SafeAreaView style={styles.container}>
-      <FlatList data={data} renderItem={renderItem} keyExtractor={item => item.id.toString()} />
+      <View style={styles.searchContainer}>
+        <TextInput style={styles.searchInput} value={search} placeholder="Search by title..." onChangeText={setSearch} />
+        <Button title="Sort by price" onPress={() => setData(sortedData)} />
+      </View>
+      <FlatList data={filterData} renderItem={renderItem} keyExtractor={item => item.id.toString()} />
     </SafeAreaView>;
 };
 
@@ -124,5 +87,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#000000"
+  },
+  searchContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10
+  },
+  searchInput: {
+    flex: 1,
+    borderColor: "#000",
+    borderWidth: 1,
+    marginRight: 10,
+    borderRadius: 5,
+    padding: 5
   }
 });
